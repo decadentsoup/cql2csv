@@ -6,14 +6,27 @@ import (
 	"os"
 	"reflect"
 
+	"github.com/alecthomas/kong"
 	"github.com/gocql/gocql"
 )
 
+type cli struct {
+	Host        []string `kong:"short='H',default='localhost:9042',help='Add a host address to try when connecting to the cluster.'"` //nolint:lll
+	Keyspace    string   `kong:"short='k',help='Set default keyspace.'"`
+	Consistency string   `kong:"short='c',default='ONE',help='Set consistency level to use for commands.'"`
+	Query       string   `kong:"arg,help='Query to execute against the cluster.'"`
+}
+
 func main() {
-	cluster := gocql.NewCluster("127.0.0.1:19042")
-	query := "DESCRIBE KEYSPACES"
+	var cli cli
+
+	kong.Parse(&cli)
 
 	writer := csv.NewWriter(os.Stdout)
+
+	cluster := gocql.NewCluster(cli.Host...)
+	cluster.Keyspace = cli.Keyspace
+	cluster.Consistency = gocql.ParseConsistency(cli.Consistency)
 
 	session, err := cluster.CreateSession()
 	if err != nil {
@@ -21,7 +34,7 @@ func main() {
 	}
 	defer session.Close()
 
-	iter := session.Query(query).Iter()
+	iter := session.Query(cli.Query).Iter()
 	defer func() {
 		if err := iter.Close(); err != nil {
 			panic(err)

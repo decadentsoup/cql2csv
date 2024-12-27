@@ -55,7 +55,7 @@ func writeHeader(writer *csv.Writer, columns []gocql.ColumnInfo) {
 	row := make([]string, len(columns))
 
 	for i, column := range columns {
-		row[i] = column.String()
+		row[i] = fmt.Sprintf("%v (%v)", column.Name, column.TypeInfo)
 	}
 
 	if err := writer.Write(row); err != nil {

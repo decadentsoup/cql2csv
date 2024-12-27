@@ -23,7 +23,7 @@ cql2csv 'SELECT * FROM ks.users;'
 Result:
 
 ```csv
-[column keyspace=ks table=users name=handle type=varchar],[column keyspace=ks table=users name=password type=blob],[column keyspace=ks table=users name=user_id type=uuid]
+handle (varchar),password (blob),user_id (uuid)
 robot,[],b71a22bb-696c-4bdb-a6c1-c314ab00c4f3
 decadentsoup,[222 173 190 239],2834ec9b-0187-49c6-bb75-39389af49765
 ```
